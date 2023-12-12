@@ -1,9 +1,13 @@
+#ifndef FRONT
+#define FRONT
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 const int size = 50;
-const int free = -1;
+const int free_cell = -1;
 
 struct Name
 {
@@ -34,7 +38,8 @@ enum OPERATORS
     OP_EXP = 5,
 
     EQUAL = 11,
-    SEMICOLON = 12,
+    LIMIT = 12,
+    SLASH = 13,
 };
 
 enum FUNCTIONS
@@ -61,6 +66,17 @@ enum TYPES
     NUM = 5,
 };
 
+void TreeDel (TreeNode* node);
+void DumpTreeNode (TreeNode* node, FILE* file, Name* name_cell);
+char GetOpChar (int command);
+TreeNode* NewNode (enum TYPES node_type, int node_value, TreeNode* left, TreeNode* right);
+long FileSize1 (FILE* file);
+char* ReadText1 (long file_size, FILE* file);
+char* TreeCtor1 (Tree* tree, FILE* file);
+void TreeDump (TreeNode* node, Name* name_cell);
+
 int SearchFreeCell (Name* name_cell);
 int SearchFuncName (char* name, Name* name_cell);
-int SearchKeyWordName (char* name, Name* name_cell);
+int SearchVarName (char* name, Name* name_cell);
+
+#endif

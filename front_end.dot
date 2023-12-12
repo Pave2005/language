@@ -1,0 +1,34 @@
+digraph G { 
+node [shape = record];
+ 12770061720  12770061720 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ` "];
+12770061720 -> 12770057340
+ 12770061720 -> 12770061660 
+ 12770057340 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " = "];
+12770057340 -> 12770057140
+ 12770057340 -> 12770057300 
+ 12770057140 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 0.000000 "];
+ 12770057300 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " y "];
+ 12770061660 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " / "];
+12770061660 -> 12770061620 12770061620 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " if "];
+12770061620 -> 12770056220
+ 12770061620 -> 12770061560 
+ 12770056220 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " = "];
+12770056220 -> 12770056060
+ 12770056220 -> 12770056160 
+ 12770056060 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 0.000000 "];
+ 12770056160 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " z "];
+ 12770061560 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ` "];
+12770061560 -> 12770056460
+ 12770061560 -> 12770061520 
+ 12770056460 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " = "];
+12770056460 -> 12770056320
+ 12770056460 -> 12770056420 
+ 12770056320 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " x "];
+ 12770056420 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " e "];
+ 12770061520 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " ` "];
+12770061520 -> 12770061460 12770061460 [shape = doubleoctagon, style = filled, fillcolor = aqua  label = " = "];
+12770061460 -> 12770056520
+ 12770061460 -> 12770061420 
+ 12770056520 [shape = doubleoctagon, style = filled, fillcolor = cornflowerblue  label = " 0.000000 "];
+ 12770061420 [shape = doubleoctagon, style = filled, fillcolor = lightblue2  label = " y "];
+}
