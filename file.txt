@@ -1,7 +1,16 @@
-0 = y`
-if 0 = z
-\
-x = e`
-0 = y`
-/
+Function ()
+    if 0 < zsa & y = x & s = o
+    \
+        x = e`
+        if 0 = z & y = x
+        \
+            x = e`
+            Function ()`
+        /
+        0 = y`
+    /
+    0 = y`.
+
+Func ()
+    0 = e`.
 

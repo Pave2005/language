@@ -87,7 +87,7 @@ TreeNode* GetG (const char* str, Position* data, Name* name_cell)
 {
     data->str = str;
     data->position = 0;
-    TreeNode* val = GetLim (data, name_cell);
+    TreeNode* val = GetFunc (data, name_cell);
     return val;
 }
 
@@ -99,68 +99,77 @@ TreeNode* GetLim (Position* data, Name* name_cell)
     int old_position = data->position;
     while (isalpha (data->str[data->position]) != 0)
     {
-        sprintf (arg + counter, "%c", data->str[data->position]); // заменить на обычный массив
+        sprintf (arg + counter, "%c", data->str[data->position]);
         data->position++;
         counter++;
-    } // посмотрели что за элемент
+    }
     if (strcmp (arg, "if") == 0 || strcmp (arg, "while") == 0)
     {
         data->position = old_position;
-        TreeNode* val = GetIf_WHILE (data, name_cell); //++
-        //TreeDump (val, name_cell);
-        printf ("<%d>\n", data->position);
+        TreeNode* val = GetCondOp (data, name_cell);
+        data->position++;
         SkipSpaces (data);
-        if (data->str[data->position] != '\0' && data->str[data->position] != '/') // не факт что эти символы вообще там лежат, 0 должен
+        if (data->str[data->position] != '.' && data->str[data->position] != '/')
         {
             TreeNode* val2 = GetLim (data, name_cell);
             return NewNode (OP, SLASH, val, val2);
         }
-        return NewNode (OP, SLASH, val, NULL); // не splash возвращаем
+        data->position++;
+        return NewNode (OP, SLASH, val, NULL);
     }
     data->position = old_position;
-    TreeNode* val = GetA (data, name_cell); // вернула // +++
-    //TreeDump (val, name_cell); // А корректно возвращает
+    TreeNode* val = GetA (data, name_cell); // +
     SkipSpaces (data);
     int pre_position = data->position;
-    data->position++; // если символ ` сдивинули, если нет - ошибка
+    data->position++;
     SkipSpaces (data);
-    // в этой части ошибка
-    if (data->str[data->position] != '\0' && data->str[data->position] != '/') // проверить в этой ли ячейке будет лежать символ
-    {
-        printf ("LIM/2\n");
-        TreeNode* val2 = GetLim (data, name_cell); // +
+    if (data->str[data->position] != '/' && data->str[data->position] != '.')
+    { // все лежит в функциях => не может закончится \0
+        TreeNode* val2 = GetLim (data, name_cell);
         return NewNode (OP, LIMIT, val, val2);
     }
     else if (data->str[data->position] == '/' && data->str[pre_position] == '`')
     {
-        printf ("LIM/NULL\n");
-        //TreeDump (NewNode (OP, LIMIT, val, NULL), name_cell);
-        return NewNode (OP, LIMIT, val, NULL); // этот не правильно возвращает
+        return NewNode (OP, LIMIT, val, NULL);
     }
     else if (data->str[data->position] == '/')
     {
-        printf ("SLASH\n");
         return NewNode (OP, SLASH, val, NULL);
     }
-    printf ("OK\n ");
     return NewNode (OP, LIMIT, val, NULL);
+}
+
+TreeNode* GetDifferentCond (Position* data, Name* name_cell)
+{
+    TreeNode* val = GetA (data, name_cell);
+    SkipSpaces (data);
+    if (data->str[data->position] == '&')
+    {
+        data->position += 2;
+        TreeNode* val2 = GetDifferentCond (data, name_cell);
+        return NewNode (OP, AND, val, val2);
+    }
+    return val;
 }
 
 TreeNode* GetA (Position* data, Name* name_cell)
 {
     TreeNode* val = GetE (data, name_cell);
-    //printf ("%c\n", data->str[data->position]);
     SkipSpaces (data);
-    if (data->str[data->position] == '=')
+    // изменить и не давать ставить знаки сравнения в теле циклов и условных операторов
+    if (data->str[data->position] == '=' ||
+        data->str[data->position] == '>' ||
+        data->str[data->position] == '<') // добавить больше/меньше
     {
+        char operation = data->str[data->position];
         data->position++;
-        TreeNode* val2 = GetId (data, name_cell); // возможно изменить на getP
-        return NewNode (OP, EQUAL, val, val2);
+        TreeNode* val2 = GetId (data, name_cell);
+        return NewNode (OP, GetOpCode (operation), val, val2);
     }
     return val;
 }
 
-TreeNode* GetIf_WHILE (Position* data, Name* name_cell) // разделить
+TreeNode* GetFunc (Position* data, Name* name_cell)
 {
     char arg[20] = "";
     int counter = 0;
@@ -172,38 +181,65 @@ TreeNode* GetIf_WHILE (Position* data, Name* name_cell) // разделить
         data->position++;
         counter++;
     }
+    SkipSpaces (data);
+    if (data->str[data->position] == '(') // если делать функцию с переменными - исправить
+    {
+        data->position++;
+        SkipSpaces (data);
+        if (data->str[data->position] == ')')
+            data->position++;
+        SkipSpaces (data);
+        TreeNode* val = GetLim (data, name_cell);
+        printf ("dot = %c\n", data->str[data->position]);
+        data->position++;
+        SkipSpaces (data);
+        if (data->str[data->position] == '\0')
+            return NewNode (FUNC_HEAD, SearchFuncName (arg, name_cell), val, NULL); // прописать случай когда ненкций много
+        else
+            return NewNode (FUNC_HEAD, SearchFuncName (arg, name_cell), val, GetFunc (data, name_cell));
+    }
+    data->position = old_position;
+    return GetLim (data, name_cell);
+}
+
+TreeNode* GetCondOp (Position* data, Name* name_cell)
+{
+    char arg[20] = "";
+    int counter = 0;
+    SkipSpaces (data);
+    int old_position = data->position; //??
+    while (isalpha (data->str[data->position]) != 0)
+    {
+        sprintf (arg + counter, "%c", data->str[data->position]);
+        data->position++;
+        counter++;
+    }
     if (strcmp (arg, "if") == 0)
     {
-        TreeNode* val = GetA (data, name_cell); // без дополнительных ограничителей в конце
+        TreeNode* val = GetDifferentCond (data, name_cell);
         TreeNode* val2 = GetOp (data, name_cell);
-        //TreeDump (val2, name_cell);
         return NewNode (KWR, IF, val, val2);
     }
     else if (strcmp (arg, "while") == 0)
     {
-        TreeNode* val = GetA (data, name_cell);
+        TreeNode* val = GetDifferentCond (data, name_cell);
         TreeNode* val2 = GetOp (data, name_cell);
         return NewNode (KWR, WHILE, val, val2);
     }
-    //data->position = old_position; // ??
-    //TreeNode* val = GetA (data, name_cell); // ??
-    //return val;
     return 0;
 }
 
-TreeNode* GetOp (Position* data, Name* name_cell) ///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+TreeNode* GetOp (Position* data, Name* name_cell)
 {
     SkipSpaces (data);
-    if (data->str[data->position] == '\\') // возможно с этим вопрос
+    if (data->str[data->position] == '\\')
     {
         printf ("OPPPPP\n");
         data->position++;
-        TreeNode* val = GetLim (data, name_cell); // предположительно сдвигает ползунок
-        //TreeDump (val, name_cell);
-        //data->position++; // возможно нужно без нее
+        TreeNode* val = GetLim (data, name_cell);
         return val;
     }
-    return 0; // возвращать код ошибки
+    return 0;
 }
 
 TreeNode* GetId (Position* data, Name* names)
@@ -220,7 +256,8 @@ TreeNode* GetId (Position* data, Name* names)
     printf ("%s\n", arg);
     SkipSpaces (data);
     int func_name_code = SearchFuncName (arg, names);
-    if (func_name_code != 0 && data->str[data->position] == '(')
+    printf ("func_code = %d\n", func_name_code);
+    if (data->str[data->position] == '(')
     {
         TreeNode* val = NULL;
         data->position++;

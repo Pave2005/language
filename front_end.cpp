@@ -10,6 +10,16 @@ TreeNode* NewNode (enum TYPES node_type, int node_value, TreeNode* left, TreeNod
     return node;
 }
 
+int GetOpCode (char op)
+{
+    if (op == '=')
+        return EQUAL;
+    else if (op == '<')
+        return MORE;
+    else if (op == '>')
+        return LESS;
+}
+
 void TreeDump (TreeNode* node, Name* name_cell)
 {
     FILE* file = NULL;
@@ -47,12 +57,18 @@ char GetOpChar (int command)
         case SLASH:
             return '/'; // подумать по этому поводу
                         // сливается с делением
+        case AND:
+            return '&';
+        case MORE:
+            return '<';
+        case LESS:
+            return '>';
     };
 
     return 0;
 }
 
-char* GetFuncName (int func)
+char* GetFuncName (int func, Name* name_cell)
 {
     switch (func)
     {
@@ -67,6 +83,8 @@ char* GetFuncName (int func)
         case LN:
             return "ln";
     };
+    return name_cell[func].value;
+    // name code <=> cell_num
 
     return NULL;
 }
@@ -85,14 +103,33 @@ void DumpTreeNode (TreeNode* node, FILE* file, Name* name_cell)
         fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = aqua "
                        " label = \" %s \"];\n",
                        node,
-                       GetFuncName ((int)node->value));
+                       GetFuncName ((int)node->value, name_cell));
+    }
+    else if (node->type == FUNC_HEAD)
+    {
+        fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = aqua "
+                       " label = \" %s* \"];\n",
+                       node,
+                       GetFuncName ((int)node->value, name_cell));
     }
     else if (node->type == OP)
     {
-        fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = aqua "
-                       " label = \" %c \"];\n",
-                       node,
-                       GetOpChar ((int)node->value));
+        if (node->value == LIMIT || node->value == SLASH)
+            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = aquamarine "
+                           " label = \" %c \"];\n",
+                           node,
+                           GetOpChar ((int)node->value));
+        else if (node->value == AND)
+
+            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = green "
+                           " label = \" %c \"];\n",
+                           node,
+                           GetOpChar ((int)node->value));
+        else
+            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = aqua "
+                           " label = \" %c \"];\n",
+                           node,
+                           GetOpChar ((int)node->value));
     }
     else if (node->type == VAR)
     {
@@ -104,11 +141,11 @@ void DumpTreeNode (TreeNode* node, FILE* file, Name* name_cell)
     else if (node->type == KWR)
     {
         if (node->value == IF)
-            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = lightblue2 "
+            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = brown1 "
                            " label = \" if \"];\n",
                            node);
         else if (node->value == WHILE)
-            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = lightblue2 "
+            fprintf (file, " %o [shape = doubleoctagon, style = filled, fillcolor = brown1 "
                            " label = \" while \"];\n",
                            node);
     }
@@ -122,7 +159,8 @@ void DumpTreeNode (TreeNode* node, FILE* file, Name* name_cell)
     }
 
     if ((node->type != OP || node->value != LIMIT || node->right != NULL) &&
-        (node->type != OP || node->value != SLASH || node->right != NULL))
+        (node->type != OP || node->value != SLASH || node->right != NULL) &&
+        (node->type != FUNC_HEAD || node->right != NULL))
     {
         if (node->right != NULL)
             fprintf (file, "\n %o -> %o \n", node, node->right);
@@ -200,10 +238,8 @@ int SearchFuncName (char* name, Name* name_cell)
         name_cell[cell].name_code = LN; // сделать функцию и отдельно рассматривать арифметические ключевые слова и слова языка
         return LN;
     }
-
-    name_cell[cell].type = free_cell;
-    name_cell[cell].value = NULL;
-    return 0; // если это не функция
+    name_cell[cell].name_code = cell;
+    return cell;
 }
 
 int SearchFreeCell (Name* name_cell)

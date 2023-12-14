@@ -10,7 +10,8 @@ struct Position
     int position;
 };
 
-TreeNode* GetIf_WHILE (Position* data, Name* name_cell);
+TreeNode* GetCondOp (Position* data, Name* name_cell);
+TreeNode* GetDifferentCond (Position* data, Name* name_cell);
 TreeNode* GetOp (Position* data, Name* name_cell);
 TreeNode* GetExp (Position* data, Name* name_cell);
 TreeNode* GetG (const char* str, Position* data, Name* name_cell);
@@ -21,6 +22,7 @@ TreeNode* GetP (Position* data, Name* name_cell);
 TreeNode* GetId (Position* data, Name* name_cell);
 TreeNode* GetA (Position* data, Name* name_cell);
 TreeNode* GetLim (Position* data, Name* name_cell);
+TreeNode* GetFunc (Position* data, Name* name_cell);
 
 void SkipSpaces (Position* data);
 
