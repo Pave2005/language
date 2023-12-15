@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "front_end.h"
-#include "language_decent.h"
+#include "../front_end/front_end.h"
+#include "../front_end/language_decent.h"
 
 int main ()
 {
@@ -9,7 +9,7 @@ int main ()
     for (int i = 0; i < size; i++)
         names[i].type = free_cell;
     Tree tree = {};
-    FILE* file = fopen ("file.txt", "r");
+    FILE* file = fopen ("front_end/file.txt", "r");
 
     Position data = {};
 

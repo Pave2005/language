@@ -1,5 +1,8 @@
-#include "language_decent.h"
-#include "front_end.h"
+#include "../front_end/language_decent.h"
+#include "../front_end/front_end.h"
+
+// понять проблему с неверным выводом названия функции
+// возможно это изза func head или с dump
 
 void SkipSpaces (Position* data)
 {
@@ -114,11 +117,10 @@ TreeNode* GetLim (Position* data, Name* name_cell)
             TreeNode* val2 = GetLim (data, name_cell);
             return NewNode (OP, SLASH, val, val2);
         }
-        data->position++;
         return NewNode (OP, SLASH, val, NULL);
     }
     data->position = old_position;
-    TreeNode* val = GetA (data, name_cell); // +
+    TreeNode* val = GetA (data, name_cell);
     SkipSpaces (data);
     int pre_position = data->position;
     data->position++;
@@ -207,7 +209,7 @@ TreeNode* GetCondOp (Position* data, Name* name_cell)
     char arg[20] = "";
     int counter = 0;
     SkipSpaces (data);
-    int old_position = data->position; //??
+    int old_position = data->position;
     while (isalpha (data->str[data->position]) != 0)
     {
         sprintf (arg + counter, "%c", data->str[data->position]);

@@ -1,8 +1,8 @@
 #ifndef DESENT
 #define DESENT
 
-#include "language_decent.h"
-#include "front_end.h"
+#include "../front_end/language_decent.h"
+#include "../front_end/front_end.h"
 
 struct Position
 {

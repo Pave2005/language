@@ -1,4 +1,4 @@
-#include "front_end.h"
+#include "../front_end/front_end.h"
 
 TreeNode* NewNode (enum TYPES node_type, int node_value, TreeNode* left, TreeNode* right)
 {
@@ -23,7 +23,7 @@ int GetOpCode (char op)
 void TreeDump (TreeNode* node, Name* name_cell)
 {
     FILE* file = NULL;
-    file = fopen ("front_end.dot", "w");
+    file = fopen ("front_end/front_end.dot", "w");
 
     fprintf (file, "digraph G { \n"
                     "node [shape = record];\n"
@@ -33,7 +33,7 @@ void TreeDump (TreeNode* node, Name* name_cell)
     fprintf (file, "}\n");
     fclose (file);
 
-    system ("dot -T png front_end.dot -o front_end.png");
+    system ("dot -T png front_end/front_end.dot -o front_end/front_end.png");
 }
 
 char GetOpChar (int command)
@@ -70,23 +70,8 @@ char GetOpChar (int command)
 
 char* GetFuncName (int func, Name* name_cell)
 {
-    switch (func)
-    {
-        case SIN:
-            return "sin";
-        case COS:
-            return "cos";
-        case TAN:
-            return "tg";
-        case COT:
-            return "ctg";
-        case LN:
-            return "ln";
-    };
     return name_cell[func].value;
     // name code <=> cell_num
-
-    return NULL;
 }
 
 void DumpTreeNode (TreeNode* node, FILE* file, Name* name_cell)
@@ -190,11 +175,9 @@ int SearchVarName (char* name, Name* name_cell)
         }
     }
     int cell = SearchFreeCell (name_cell);
-    printf ("cell = %d\n", cell);
     name_cell[cell].type = VAR;
     name_cell[cell].value = strdup (name);
-    printf ("value = %s\n", name_cell[cell].value);
-    name_cell[cell].name_code = cell; // просто номер ячейки
+    name_cell[cell].name_code = cell;
     return cell;
 }
 
@@ -213,31 +196,6 @@ int SearchFuncName (char* name, Name* name_cell)
     int cell = SearchFreeCell (name_cell);
     name_cell[cell].type = FUNC;
     name_cell[cell].value = strdup (name);
-    if (strcmp ("sin", name) == 0)
-    {
-        name_cell[cell].name_code = SIN;
-        return SIN;
-    }
-    else if (strcmp ("cos", name) == 0)
-    {
-        name_cell[cell].name_code = COS;
-        return COS;
-    }
-    else if (strcmp ("tg", name) == 0)
-    {
-        name_cell[cell].name_code = TAN;
-        return TAN;
-    }
-    else if (strcmp ("ctg", name) == 0)
-    {
-        name_cell[cell].name_code = COT;
-        return COT;
-    }
-    else if (strcmp ("ln", name) == 0)
-    {
-        name_cell[cell].name_code = LN; // сделать функцию и отдельно рассматривать арифметические ключевые слова и слова языка
-        return LN;
-    }
     name_cell[cell].name_code = cell;
     return cell;
 }
