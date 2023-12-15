@@ -12,7 +12,31 @@ void ConvertToAssembler (TreeNode* node, FILE* file, Name* name_cell)
     stack if_num = {};
     StackCtor (&if_num, num_size);
 
-    if (node->type == KWR && node->value == WHILE) // изменить так как while может не соответствовать условию
+    if (node->type == FUNC_HEAD) // выделить main
+                                 // у main будет hlt в конце
+    {
+        if (strcmp ("main", name_cell[(int)node->value].value) == 0 ||
+            strcmp ("MAIN", name_cell[(int)node->value].value) == 0 ||
+            strcmp ("Main", name_cell[(int)node->value].value) == 0)
+        {
+            if (node->left != NULL)
+                ConvertToAssembler (node->left, file, name_cell);
+            fprintf (file, "hlt\n\n");
+            if (node->right != NULL && (node->type != OP || node->value != EQUAL))
+                ConvertToAssembler (node->right, file, name_cell);
+        }
+        else
+        {
+            fprintf (file, ":%s\n", name_cell[(int)node->value].value);
+            if (node->left != NULL)
+                ConvertToAssembler (node->left, file, name_cell);
+            fprintf (file, "ret\n\n"); // возможно заменить на jmp
+            if (node->right != NULL && (node->type != OP || node->value != EQUAL))
+                ConvertToAssembler (node->right, file, name_cell);
+        }
+    }
+
+    if (node->type == KWR && node->value == WHILE)
     {
         StackPush (&while_num, (float)num_of_while);
 
@@ -24,7 +48,6 @@ void ConvertToAssembler (TreeNode* node, FILE* file, Name* name_cell)
             fprintf (file, "ja :while_%d\n", (int)tmp_num);
             fprintf (file, "jbe :then_while_%d\n", (int)tmp_num);
             StackPush (&while_num, tmp_num);
-
         }
         else if (node->left->value == LESS)
         {
@@ -90,7 +113,8 @@ void ConvertToAssembler (TreeNode* node, FILE* file, Name* name_cell)
         fprintf (file, ":then_if_%d\n", num_of_if - 1);
     }
 
-    if (node->type != KWR || (node->value != WHILE && node->value != IF))
+    if ((node->type != KWR || (node->value != WHILE && node->value != IF)) &&
+        node->type != FUNC_HEAD)
     {
         if (node->left != NULL)
             ConvertToAssembler (node->left, file, name_cell);
@@ -101,6 +125,10 @@ void ConvertToAssembler (TreeNode* node, FILE* file, Name* name_cell)
     if (node->type == NUM)
     {
         fprintf (file, "push %f\n", node->value);
+    }
+    else if (node->type == FUNC)
+    {
+        fprintf (file, "call :%s\n", name_cell[(int)node->value].value);
     }
     else if (node->type == OP)
     {

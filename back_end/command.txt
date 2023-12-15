@@ -24,6 +24,8 @@ push [2]
 jb :while_0
 jbe :then_while_0
 :then_while_0
+push 0.000000
+call :func
 push [0]
 push [2]
 ja :if_0
@@ -32,3 +34,10 @@ jbe :then_if_0
 push [2]
 pop [0]
 :then_if_0
+hlt
+
+:func
+push 3.000000
+pop [5]
+ret
+
