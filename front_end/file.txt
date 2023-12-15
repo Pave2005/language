@@ -6,7 +6,8 @@ Function ()
     \
         (i + 1) * factorial = factorial`
         i + 1 = i`
+    /
+    if x < i
+    \
+        i = x`
     /.
-
-
-

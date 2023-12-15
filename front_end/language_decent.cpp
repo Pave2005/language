@@ -1,9 +1,6 @@
 #include "../front_end/language_decent.h"
 #include "../front_end/front_end.h"
 
-// понять проблему с неверным выводом названия функции
-// возможно это изза func head или с dump
-
 void SkipSpaces (Position* data)
 {
     while (data->str[data->position] == ' ' || data->str[data->position] == '\n')
@@ -23,7 +20,6 @@ TreeNode* GetP (Position* data, Name* name_cell)
         data->position++;
         return val;
     }
-
     if (isalpha (data->str[data->position]) != 0)
     {
         return GetId (data, name_cell);
@@ -257,10 +253,10 @@ TreeNode* GetId (Position* data, Name* names)
     }
     printf ("%s\n", arg);
     SkipSpaces (data);
-    int func_name_code = SearchFuncName (arg, names);
-    printf ("func_code = %d\n", func_name_code);
     if (data->str[data->position] == '(')
     {
+        int func_name_code = SearchFuncName (arg, names);
+        printf ("func_code = %d\n", func_name_code);
         TreeNode* val = NULL;
         data->position++;
         val = GetE (data, names);

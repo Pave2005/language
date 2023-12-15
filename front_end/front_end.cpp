@@ -153,14 +153,11 @@ void DumpTreeNode (TreeNode* node, FILE* file, Name* name_cell)
             return;
     }
 
-
     if (node->type != FUNC)
         DumpTreeNode (node->left, file, name_cell);
     if (node->right != NULL)
         DumpTreeNode (node->right, file, name_cell);
 }
-
-
 
 int SearchVarName (char* name, Name* name_cell)
 {
